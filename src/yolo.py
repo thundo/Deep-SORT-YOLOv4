@@ -5,6 +5,12 @@ Class definition of YOLO_v4 style detection model on image and video
 
 import colorsys
 import tensorflow as tf
+
+# Fix for CUDNN_STATUS_INTERNAL_ERROR
+gpus = tf.config.experimental.list_physical_devices('GPU')
+for gpu in gpus:
+    tf.config.experimental.set_memory_growth(gpu, True)
+
 from tensorflow.compat.v1.keras import backend as K
 import numpy as np
 from keras import backend as K
