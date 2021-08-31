@@ -13,7 +13,7 @@ from keras.models import load_model
 from yolo4.model import yolo_eval, Mish
 from yolo4.utils import letterbox_image
 import os
-from keras.utils import multi_gpu_model
+from tensorflow.python.keras.utils.multi_gpu_utils import multi_gpu_model
 
 class YOLO(object):
     def __init__(self):
