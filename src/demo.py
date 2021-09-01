@@ -17,32 +17,41 @@ from deep_sort.tracker import Tracker
 from tools import generate_detections as gdet
 import imutils.video
 from videocaptureasync import VideoCaptureAsync
+import click
 
 warnings.filterwarnings('ignore')
 
 
-def main(yolo):
+@click.command()
+@click.option('--input', help='Input file [default: input/video.webm]', metavar='PATH', default='input/video.webm')
+@click.option('--output', help='Output file [default: output/tracker.avi]', metavar='PATH', default='output/tracker.avi')
+@click.option('--tracker', help='Cosine metric model [default: model_data/mars-small128.pb]', metavar='PATH', default='model_data/mars-small128.pb')
+
+def main(**config_kwargs):
+
+    print(config_kwargs)
+
+    yolo = YOLO()
+
     # Definition of the parameters
     max_cosine_distance = 0.3
     nn_budget = None
     nms_max_overlap = 1.0
 
     # Deep SORT
-    model_filename = 'model_data/mars-small128.pb'
-    encoder = gdet.create_box_encoder(model_filename, batch_size=1)
+    encoder = gdet.create_box_encoder(config_kwargs['tracker'], batch_size=1)
 
-    metric = nn_matching.NearestNeighborDistanceMetric("cosine", max_cosine_distance, nn_budget)
+    metric = nn_matching.NearestNeighborDistanceMetric('cosine', max_cosine_distance, nn_budget)
     tracker = Tracker(metric)
 
     show_detections = True
     writeVideo_flag = True
     asyncVideo_flag = False
 
-    file_path = 'input/video.webm'
     if asyncVideo_flag:
-        video_capture = VideoCaptureAsync(file_path)
+        video_capture = VideoCaptureAsync(config_kwargs['input'])
     else:
-        video_capture = cv2.VideoCapture(file_path)
+        video_capture = cv2.VideoCapture(config_kwargs['input'])
 
     if asyncVideo_flag:
         video_capture.start()
@@ -55,7 +64,7 @@ def main(yolo):
             w = int(video_capture.get(3))
             h = int(video_capture.get(4))
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
-        out = cv2.VideoWriter('output/tracker.avi', fourcc, 30, (w, h))
+        out = cv2.VideoWriter(config_kwargs['output'], fourcc, 30, (w, h))
         frame_index = -1
 
     fps = 0.0
@@ -141,6 +150,5 @@ def main(yolo):
 
     cv2.destroyAllWindows()
 
-
 if __name__ == '__main__':
-    main(YOLO())
+    main()
