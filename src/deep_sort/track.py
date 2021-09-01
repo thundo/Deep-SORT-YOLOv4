@@ -117,6 +117,17 @@ class Track:
         ret[2:] = ret[:2] + ret[2:]
         return ret
 
+    def center(self):
+        """Get current bounding box center.
+
+        Returns
+        -------
+        ndarray
+            The center position.
+
+        """
+        return (self.mean[0], self.mean[1])
+
     def predict(self, kf):
         """Propagate the state distribution to the current time step using a
         Kalman filter prediction step.
