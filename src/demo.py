@@ -48,6 +48,11 @@ def main(**config_kwargs):
     writeVideo_flag = True
     asyncVideo_flag = False
 
+    text_color = (255, 255, 255)
+    rect_color = (255, 255, 255)
+    text_font = cv2.FONT_HERSHEY_DUPLEX
+    text_line = cv2.LINE_AA
+
     if asyncVideo_flag:
         video_capture = VideoCaptureAsync(config_kwargs['input'])
     else:
@@ -100,8 +105,15 @@ def main(**config_kwargs):
             if show_detections and len(classes) > 0:
                 det_cls = det.cls
                 score = "%.2f" % (det.confidence * 100) + "%"
-                cv2.putText(frame, str(det_cls) + " " + score, (int(bbox[0]), int(bbox[3])), 0,
-                            1e-3 * frame.shape[0], (0, 255, 0), 1)
+                cv2.putText(
+                    img=frame,
+                    text=str(det_cls) + " " + score,
+                    org=(int(bbox[0]), int(bbox[3])),
+                    fontFace=text_font,
+                    fontScale=1e-3 * frame.shape[0],
+                    color=text_color,
+                    thickness=1,
+                    lineType=text_line)
                 cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 0, 0), 2)
 
         for track in tracker.tracks:
@@ -110,15 +122,36 @@ def main(**config_kwargs):
             bbox = track.to_tlbr()
 
             adc = "%.2f" % (track.adc * 100) + "%"  # Average detection confidence
-            cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 255, 255), 2)
-            cv2.putText(frame, "ID: " + str(track.track_id), (int(bbox[0]), int(bbox[1])), 0,
-                        1e-3 * frame.shape[0], (0, 255, 0), 1)
+            cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), rect_color, 2)
+            cv2.putText(
+                img=frame, 
+                text= "ID: " + str(track.track_id), 
+                org=(int(bbox[0]), int(bbox[1]) - 4), 
+                fontFace=text_font,
+                fontScale=1e-3 * frame.shape[0], 
+                color=text_color, 
+                thickness=1,
+                lineType=text_line)
             if not show_detections:
                 track_cls = track.cls
-                cv2.putText(frame, str(track_cls), (int(bbox[0]), int(bbox[3])), 0, 1e-3 * frame.shape[0], (0, 255, 0),
-                            1)
-                cv2.putText(frame, 'ADC: ' + adc, (int(bbox[0]), int(bbox[3] + 2e-2 * frame.shape[1])), 0,
-                            1e-3 * frame.shape[0], (0, 255, 0), 1)
+                cv2.putText(
+                    img=frame,
+                    text=str(track_cls),
+                    org=(int(bbox[0] + 4), int(bbox[3]) - 4),
+                    fontFace=text_font,
+                    fontScale=1e-3 * frame.shape[0],
+                    color=text_color,
+                    thickness=1,
+                    lineType=text_line)
+                cv2.putText(
+                    img=frame,
+                    text='ADC: ' + adc,
+                    org=(int(bbox[0]), int(bbox[3] + 2e-2 * frame.shape[1])),
+                    fontFace=text_font,
+                    fontScale=1e-3 * frame.shape[0],
+                    color=text_color,
+                    thickness=1,
+                    lineType=text_line)
 
         cv2.imshow('', frame)
 
