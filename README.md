@@ -1,3 +1,13 @@
+This fork slims down the original repo to only the Tensorflow2 version (with low confidence filter).
+
+It restores the demo to a working state (fixes imports and deprecations and a couple bugs).
+
+It has the following enhancements:
+* Improved visualization (with fading tracks)
+* CLI args
+
+-------------------
+
 # Introduction
 This project was inspired by:
 * https://github.com/nwojke/deep_sort
