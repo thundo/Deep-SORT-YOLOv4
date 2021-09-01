@@ -52,6 +52,7 @@ def main(**config_kwargs):
 
     track_marker_radius = 8
     track_max_age = 50
+    track_color = (0, 0, 255)
     text_color = (255, 255, 255)
     rect_color = (255, 255, 255)
     text_font = cv2.FONT_HERSHEY_DUPLEX
@@ -177,7 +178,7 @@ def main(**config_kwargs):
             overlay = frame.copy()
             tracks = tracks_per_frame[frame_idx]
             for t_id, t_center in tracks.items():
-                cv2.circle(overlay, (int(t_center[0]), int(t_center[1])), track_marker_radius, (0, 0, 255), -1)
+                cv2.circle(overlay, (int(t_center[0]), int(t_center[1])), track_marker_radius, track_color, -1)
 
             alpha = 1 - frame_age / track_max_age
             frame = cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0)
