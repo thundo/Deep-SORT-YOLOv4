@@ -23,9 +23,9 @@ warnings.filterwarnings('ignore')
 
 
 @click.command()
-@click.option('--input', help='Input file [default: input/video.webm]', metavar='PATH', default='input/video.webm')
-@click.option('--output', help='Output file [default: output/tracker.avi]', metavar='PATH', default='output/tracker.avi')
-@click.option('--tracker', help='Cosine metric model [default: model_data/mars-small128.pb]', metavar='PATH', default='model_data/mars-small128.pb')
+@click.option('--input', help='Input file [default: input/video.webm]', type=click.Path(exists=True), default='input/video.webm')
+@click.option('--output', help='Output file [default: output/tracker.avi]', type=click.Path(exists=True), default='output/tracker.avi')
+@click.option('--tracker', help='Cosine metric model [default: model_data/mars-small128.pb]', type=click.Path(exists=True), default='model_data/mars-small128.pb')
 
 def main(**config_kwargs):
 
