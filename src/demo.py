@@ -18,12 +18,13 @@ from tools import generate_detections as gdet
 import imutils.video
 from videocaptureasync import VideoCaptureAsync
 import click
+from collections import OrderedDict
 
 warnings.filterwarnings('ignore')
 
 @click.command()
 @click.option('--input', '-i', help='Input file [default: input/video.webm]', type=click.Path(exists=True), default='input/video.webm')
-@click.option('--output', '-o', help='Output file [default: output/tracker.avi]', type=click.Path(exists=True), default='output/tracker.avi')
+@click.option('--output', '-o', help='Output file [default: output/tracker.avi]', type=click.Path(), default='output/tracker.avi')
 @click.option('--tracker', '-t', help='Cosine metric model [default: model_data/mars-small128.pb]', type=click.Path(exists=True), default='model_data/mars-small128.pb')
 @click.option('--detect', '-d', multiple=True, help='Detect class [default: empty for all of them]')
 
