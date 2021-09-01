@@ -50,6 +50,8 @@ def main(**config_kwargs):
     asyncVideo_flag = False
     frame_index = -1
 
+    track_marker_radius = 8
+    track_max_age = 50
     text_color = (255, 255, 255)
     rect_color = (255, 255, 255)
     text_font = cv2.FONT_HERSHEY_DUPLEX
@@ -75,6 +77,7 @@ def main(**config_kwargs):
 
     fps = 0.0
     fps_imutils = imutils.video.FPS().start()
+    tracks_per_frame = OrderedDict()
 
     while True:
         ret, frame = video_capture.read()  # frame shape 640*480*3
@@ -118,10 +121,14 @@ def main(**config_kwargs):
                     lineType=text_line)
                 cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 0, 0), 2)
 
+        tracks_per_frame[frame_index] = {}
         for track in tracker.tracks:
             if not track.is_confirmed() or track.time_since_update > 1:
                 continue
+
             bbox = track.to_tlbr()
+            center = track.center()
+            tracks_per_frame[frame_index][track.track_id] = center
 
             adc = "%.2f" % (track.adc * 100) + "%"  # Average detection confidence
             cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), rect_color, 2)
@@ -154,6 +161,26 @@ def main(**config_kwargs):
                     color=text_color,
                     thickness=1,
                     lineType=text_line)
+
+        # No tracks in this frame
+        if not tracks_per_frame[frame_index]:
+            del tracks_per_frame[frame_index]
+
+        # Draw (fading) tracks
+        for frame_idx in list(tracks_per_frame.keys()):
+            # Delete tracks older than n frames
+            frame_age = frame_index - frame_idx
+            if frame_age > track_max_age:
+                del tracks_per_frame[frame_idx]
+                continue
+            # Add overlay for alpha
+            overlay = frame.copy()
+            tracks = tracks_per_frame[frame_idx]
+            for t_id, t_center in tracks.items():
+                cv2.circle(overlay, (int(t_center[0]), int(t_center[1])), track_marker_radius, (0, 0, 255), -1)
+
+            alpha = 1 - frame_age / track_max_age
+            frame = cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0)
 
         cv2.imshow('', frame)
 
