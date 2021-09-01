@@ -48,6 +48,7 @@ def main(**config_kwargs):
     show_detections = True
     writeVideo_flag = True
     asyncVideo_flag = False
+    frame_index = -1
 
     text_color = (255, 255, 255)
     rect_color = (255, 255, 255)
@@ -71,7 +72,6 @@ def main(**config_kwargs):
             h = int(video_capture.get(4))
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
         out = cv2.VideoWriter(config_kwargs['output'], fourcc, 30, (w, h))
-        frame_index = -1
 
     fps = 0.0
     fps_imutils = imutils.video.FPS().start()
@@ -80,6 +80,7 @@ def main(**config_kwargs):
         ret, frame = video_capture.read()  # frame shape 640*480*3
         if ret != True:
             break
+        frame_index += 1
 
         t1 = time.time()
 
@@ -159,7 +160,6 @@ def main(**config_kwargs):
         if writeVideo_flag:
             # save a frame
             out.write(frame)
-            frame_index = frame_index + 1
 
         fps_imutils.update()
 
