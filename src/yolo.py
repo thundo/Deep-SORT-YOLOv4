@@ -22,7 +22,7 @@ import os
 from tensorflow.python.keras.utils.multi_gpu_utils import multi_gpu_model
 
 class YOLO(object):
-    def __init__(self):
+    def __init__(self, detect_classes=None):
         self.model_path = 'model_data/yolo4.h5'
         self.anchors_path = 'model_data/yolo_anchors.txt'
         self.classes_path = 'model_data/coco_classes.txt'
@@ -35,6 +35,10 @@ class YOLO(object):
         self.model_image_size = (416, 416)  # fixed size or (None, None)
         self.is_fixed_size = self.model_image_size != (None, None)
         self.boxes, self.scores, self.classes = self.generate()
+        if not detect_classes or detect_classes is None:
+            self.detect_classes = self.class_names
+        else:
+            self.detect_classes = detect_classes
 
     def _get_class(self):
         classes_path = os.path.expanduser(self.classes_path)
@@ -107,7 +111,7 @@ class YOLO(object):
         return_class_names = []
         for i, c in reversed(list(enumerate(out_classes))):
             predicted_class = self.class_names[c]
-            if predicted_class != 'person':  # Modify to detect other classes.
+            if predicted_class not in self.detect_classes:
                 continue
             box = out_boxes[i]
             score = out_scores[i]
