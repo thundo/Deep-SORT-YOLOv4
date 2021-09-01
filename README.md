@@ -1,4 +1,4 @@
-This fork slims down the original repo to only the Tensorflow2 version (with low confidence filter).
+This fork slims down the original repo to the Tensorflow2 version only (with low confidence filter).
 
 It restores the demo to a working state (fixes imports and deprecations and a couple bugs).
 
